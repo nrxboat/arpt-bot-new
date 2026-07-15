@@ -26,3 +26,6 @@ Thumbs.db
 # Temp files
 *_new_upload.txt
 test_upload.py
+
+# AriaNg downloaded files (re-download on deploy)
+nginx/aria-ng-*/

@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>AriaNg - Auto Setup</title>
+</head>
+<body style="text-align:center;padding-top:100px;font-family:sans-serif">
+<p>Auto-configuring AriaNg...</p>
+<script>
+// Base64 encode the secret for AriaNg URL
+var secret = "112233445566";
+var b64 = btoa(unescape(encodeURIComponent(secret)));
+// Build the settings URL - this auto-configures AriaNg RPC
+var settingsUrl = "#!/settings/rpc/set/http/localhost/6800/jsonrpc/" + b64;
+// Set localStorage defaults
+localStorage.setItem("AriaNg.Options", JSON.stringify({
+    language: "zh_Hans",
+    rpcAlias: "ARPT",
+    rpcHost: "localhost",
+    rpcPort: 6800,
+    rpcSecret: secret,
+    rpcSecure: false,
+    protocol: "http"
+}));
+// Redirect to AriaNg main page with settings
+window.location.href = "index.html" + settingsUrl;
+</script>
+</body>
+</html>
