@@ -1,0 +1,28 @@
+﻿# 环境变量（含敏感信息）
+.env
+
+# rclone 配置（含 token）
+rclone/rclone.conf
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# Docker
+# （不忽略 docker-compose.yml）
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Session files
+*.session
+# Temp files
+*_new_upload.txt
+test_upload.py

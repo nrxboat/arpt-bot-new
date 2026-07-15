@@ -1,0 +1,81 @@
+services:
+  aria2:
+    image: p3terx/aria2-pro:latest
+    container_name: arpt-aria2
+    restart: unless-stopped
+    environment:
+      - RPC_SECRET=${ARIA2_SECRET}
+      - RPC_PORT=6800
+      - LISTEN_PORT=6888
+      - DISK_CACHE=64M
+      - IPV6_MODE=false
+      - UPDATE_TRACKERS=true
+      - CUSTOM_TRACKER_URL=
+      - TZ=Asia/Shanghai
+    ports:
+      - "${ARIA2_WEB_PORT:-8080}:8080"
+    volumes:
+      - downloads:/downloads
+      - ./aria2/aria2.conf:/config/aria2.conf
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+  rclone:
+    image: rclone/rclone:latest
+    container_name: arpt-rclone
+    restart: unless-stopped
+    command:
+      - rcd
+      - --rc-addr=0.0.0.0:5572
+      - --rc-no-auth
+      - --config=/config/rclone/rclone.conf
+      - --rc-allow-origin=*
+      - --transfers=4
+      - --drive-chunk-size=64M
+    volumes:
+      - downloads:/downloads:rw
+      - ./rclone:/config/rclone
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "rclone", "rc", "core/stats", "--url=http://localhost:5572"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  bot:
+    build:
+      context: ./bot
+      dockerfile: Dockerfile
+    container_name: arpt-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - ARIA2_HOST=http://aria2
+      - ARIA2_PORT=6800
+      - ARIA2_SECRET=${ARIA2_SECRET}
+      - RCLONE_HOST=http://rclone
+      - RCLONE_PORT=5572
+      - TZ=Asia/Shanghai
+    volumes:
+      - downloads:/downloads:rw
+      - ./bot:/bot:rw
+    depends_on:
+      - aria2
+      - rclone
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+volumes:
+  downloads:
+    name: arpt-downloads
