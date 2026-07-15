@@ -75,23 +75,23 @@ docker compose up -d
 
 ### 环境变量
 
-# ---------- Telegram ✅ ----------
-API_ID=你的API_ID
-API_HASH=你的API_HASH
-BOT_TOKEN=你的Bot_Token
-OWNER_ID=你的用户ID
+#### ---------- Telegram ✅ ----------
+- API_ID=你的API_ID
+- API_HASH=你的API_HASH
+- BOT_TOKEN=你的Bot_Token
+- OWNER_ID=你的用户ID
 
-# ---------- Aria2 ✅ ----------
-ARIA2_SECRET=设置一个密码
-ARIA2_WEB_PORT=8080
+#### ---------- Aria2 ✅ ----------
+- ARIA2_SECRET=设置一个密码
+- ARIA2_WEB_PORT=8080
 
-# ---------- Rclone ✅ ----------
-RCLONE_REMOTE=onedrive              # rclone 盘符
-RCLONE_UPLOAD_DIR=download    # 上传到的文件夹名
-RCLONE_SHARE=false
+#### ---------- Rclone ✅ ----------
+- RCLONE_REMOTE=onedrive              # rclone 盘符
+- RCLONE_UPLOAD_DIR=download    # 上传到的文件夹名
+- RCLONE_SHARE=false
 
-# ---------- 可选 ----------
-ERROR_USER_INFO=你没有使用权限，请联系管理员。
+#### ---------- 可选 ----------
+- ERROR_USER_INFO=你没有使用权限，请联系管理员。
 
 ### 运维
 
