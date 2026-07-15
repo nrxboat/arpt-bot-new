@@ -1,6 +1,6 @@
 ﻿# ARPT-Bot-New
 
-基于 Telethon + Docker Compose 的 Telegram 下载机器人。复刻 [ARPT-Bot](https://github.com/666wcy/ARPT-Bot) 核心功能，采用多容器架构重写。
+基于 Telethon + Docker Compose 的 Telegram 下载机器人。本bot是对此项目的复刻 [ARPT-Bot](https://github.com/666wcy/ARPT-Bot) ，因为原项目已停止更新且无法运行。
 
 ## 功能
 
@@ -23,8 +23,7 @@
 - 实时下载/上传进度条，大文件不误判
 - 磁力链接和 .torrent 文件自动识别
 - 上传完成后自动清理本地文件
-- 行内按钮（暂停/取消）
-- AriaNg Web 管理面板
+
 
 ## 架构
 
@@ -76,18 +75,23 @@ docker compose up -d
 
 ### 环境变量
 
-| 变量 | 必需 | 说明 |
-|------|------|------|
-| `API_ID` | ✅ | Telegram API ID |
-| `API_HASH` | ✅ | Telegram API Hash |
-| `BOT_TOKEN` | ✅ | Bot Token |
-| `OWNER_ID` | ✅ | 授权用户或群组 ID |
-| `ARIA2_SECRET` | ✅ | Aria2 RPC 密钥 |
-| `RCLONE_REMOTE` | ✅ | rclone 远程盘符 |
-| `RCLONE_UPLOAD_DIR` | | 上传目标文件夹 |
-| `RCLONE_SHARE` | | 上传后返回 OneDrive 分享链接 |
-| `ARIA2_WEB_PORT` | | AriaNg 端口（默认 8080） |
-| `ERROR_USER_INFO` | | 未授权用户提示 |
+# ---------- Telegram ✅ ----------
+API_ID=你的API_ID
+API_HASH=你的API_HASH
+BOT_TOKEN=你的Bot_Token
+OWNER_ID=你的用户ID
+
+# ---------- Aria2 ✅ ----------
+ARIA2_SECRET=设置一个密码
+ARIA2_WEB_PORT=8080
+
+# ---------- Rclone ✅ ----------
+RCLONE_REMOTE=onedrive              # rclone 盘符
+RCLONE_UPLOAD_DIR=download    # 上传到的文件夹名
+RCLONE_SHARE=false
+
+# ---------- 可选 ----------
+ERROR_USER_INFO=你没有使用权限，请联系管理员。
 
 ### 运维
 
@@ -124,6 +128,4 @@ docker compose down            # 停止全部
 
 原项目 [666wcy/ARPT-Bot](https://github.com/666wcy/ARPT-Bot) 是功能丰富的 Telegram 下载机器人，本项目是对其核心功能的 Docker 化复刻。
 
-## License
 
-MIT
