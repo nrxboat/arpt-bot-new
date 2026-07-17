@@ -8,6 +8,9 @@ from config import DOWNLOAD_DIR, OWNER_ID
 
 log = logging.getLogger("pixiv")
 
+_author_cache: dict = {}  # uid -> illusts list
+PAGE_SIZE = 5
+
 
 def register(bot):
     @bot.on(events.NewMessage)
@@ -34,6 +37,12 @@ def register(bot):
     @bot.on(events.CallbackQuery)
     async def cb(event):
         d = event.data.decode()
+        if d == "pxnone":
+            await event.answer()
+            return
+        if d.startswith("pxauth:"):
+            await _author_page_cb(event)
+            return
         if d.startswith("pxdl:"):
             parts = d.split(":")
             pid = int(parts[1])
@@ -92,6 +101,43 @@ async def _pixivtoken_set_cmd(event, text):
         "The token has been saved and will persist across restarts.\n"
         "Try using Pixiv commands like /pixivpid 123456."
     )
+def _build_author_buttons(uid, page, illusts, total_pages):
+    start = page * PAGE_SIZE
+    batch = illusts[start:start + PAGE_SIZE]
+    btns = []
+    for ill in batch:
+        pid = ill["id"]
+        label = (ill.get("title") or str(pid))[:40]
+        btns.append([Button.inline(label, "pxdl:" + str(pid) + ":tg")])
+    if total_pages > 1:
+        nav = []
+        if page > 0:
+            nav.append(Button.inline("<< Prev", "pxauth:" + str(uid) + ":" + str(page - 1)))
+        nav.append(Button.inline(str(page + 1) + "/" + str(total_pages), "pxnone"))
+        if page < total_pages - 1:
+            nav.append(Button.inline("Next >>", "pxauth:" + str(uid) + ":" + str(page + 1)))
+        btns.append(nav)
+    return btns
+
+
+async def _author_page_cb(event):
+    data = event.data.decode()
+    parts = data.split(":")
+    uid = int(parts[1])
+    page = int(parts[2])
+    illusts = _author_cache.get(uid)
+    if not illusts:
+        await event.answer("Session expired, please re-run /pixivauthor")
+        return
+    total_pages = max(1, (len(illusts) + PAGE_SIZE - 1) // PAGE_SIZE)
+    name = illusts[0].get("user", {}).get("name", str(uid)) if illusts else str(uid)
+    text_out = _author_page_text(name, uid, illusts, page, PAGE_SIZE)
+    text_out += "\nPage " + str(page + 1) + "/" + str(total_pages) + " (Total: " + str(len(illusts)) + ")"
+    btns = _build_author_buttons(uid, page, illusts, total_pages)
+    await event.edit(text_out, buttons=btns)
+    await event.answer()
+
+
 
 async def _pid_cmd(event, text):
     args = text.split()
@@ -120,6 +166,18 @@ async def _pid_cmd(event, text):
     await msg.edit(info, buttons=btns)
 
 
+def _author_page_text(name, uid, illusts, page, page_size):
+    """Generate text for author works page."""
+    start = page * page_size
+    batch = illusts[start:start + page_size]
+    lines = ["**" + name + "** (ID: " + str(uid) + ")"]
+    for ill in batch:
+        pid = ill["id"]
+        t = ill.get("title") or "Untitled"
+        pages = len(ill.get("meta_pages", []) or [1])
+        lines.append(str(pid) + " " + t + " (" + str(pages) + "p)")
+    return "\n".join(lines)
+
 async def _author_cmd(event, text):
     args = text.split()
     if len(args) < 2:
@@ -135,23 +193,15 @@ async def _author_cmd(event, text):
     if not name:
         await msg.edit("Author not found or not logged in.")
         return
+    _author_cache[uid] = illusts
     count = len(illusts)
-    lines = ["**" + name + "** (ID: " + str(uid) + ")", "Total works: " + str(count), ""]
-    for ill in illusts[:5]:
-        pid = ill["id"]
-        t = ill.get("title", "Untitled")
-        pages = len(ill.get("meta_pages", []) or [1])
-        lines.append("" + str(pid) + " " + t + " (" + str(pages) + "p)")
-    text_out = "\n".join(lines)
-    if count > 5:
-        text_out += "\n...and " + str(count - 5) + " more"
-    btns = []
-    for ill in illusts[:10]:
-        pid = ill["id"]
-        btns.append([Button.inline(
-            ill.get("title", str(pid))[:40],
-            "pxdl:" + str(pid) + ":tg"
-        )])
+    total_pages = max(1, (count + PAGE_SIZE - 1) // PAGE_SIZE)
+    text_out = _author_page_text(name, uid, illusts, 0, PAGE_SIZE)
+    if total_pages > 1:
+        text_out += "\nPage 1/" + str(total_pages) + " (Total: " + str(count) + ")"
+    else:
+        text_out += "\nTotal works: " + str(count)
+    btns = _build_author_buttons(uid, 0, illusts, total_pages)
     await msg.edit(text_out, buttons=btns)
 
 
@@ -174,7 +224,7 @@ async def _top_cmd(event, text):
     row = []
     for i, ill in enumerate(illusts[:30]):
         pid = ill["id"]
-        t = ill.get("title", "?")[:35]
+        t = (ill.get("title") or "?")[:35]
         lines.append(str(i+1) + ". " + str(pid) + " " + t)
         row.append(Button.inline(str(i+1), "pxdl:" + str(pid) + ":tg"))
         if len(row) == 5:
