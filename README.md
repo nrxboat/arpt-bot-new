@@ -1,4 +1,4 @@
-﻿# ARPT-Bot-New
+# ARPT-Bot-New
 
 基于 Telethon + Docker Compose 的 Telegram 下载机器人。本bot是对此项目的复刻 [ARPT-Bot](https://github.com/666wcy/ARPT-Bot) ，因为原项目已停止更新且无法运行。
 
@@ -112,9 +112,23 @@ docker compose down            # 停止全部
 | 语言 | Python 3.12 + asyncio |
 | 容器化 | Docker Compose v2（4 容器） |
 
+## Pixiv 命令
+
+Pixiv 功能需要先设置 `PIXIV_REFRESH_TOKEN`（在 `.env` 中配置或通过 `/pixivtoken` 命令设置）。
+
+| 命令 | 说明 |
+|---------|-------------|
+| `/pixivpid <id>` | 按画作 ID 下载插画 |
+| `/pixivauthor <uid>` | 浏览画师作品并下载 |
+| `/pixivtop [mode]` | 排行榜下载（day / week / month / day_male / day_female / week_original / week_rookie / day_manga） |
+| `/pixivtoken` | 获取 Pixiv refresh_token 的教程 |
+| `/pixivtoken <token>` | 直接设置 Pixiv refresh_token |
+
+> 获取 refresh_token 的方法：运行 [pixiv_auth.py](https://gist.github.com/ZipFile/c9ebedb224406f4f11845ab700124362) 脚本，按 `/pixivtoken` 中的教程操作。
+
 ## TODO
 
-- [ ] Pixiv 画师/排行榜下载
+- [x] Pixiv 画师/排行榜下载 + refresh_token 登录
 - [ ] YouTube/Bilibili 视频下载（yt-dlp）
 - [ ] 网易云音乐下载
 - [ ] nhentai/e-hentai/哔咔 本子搜索下载

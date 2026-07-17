@@ -1,22 +1,33 @@
-FROM python:3.12-slim
+FROM python:3.11-slim
 
-# 系统依赖
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     ffmpeg \
+    libnspr4 \
+    libnss3 \
+    libcups2 \
+    libdrm2 \
+    libxkbcommon0 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxfixes3 \
+    libxrandr2 \
+    libgbm1 \
+    libpango-1.0-0 \
+    libcairo2 \
+    libasound2 \
+    libxcb-shm0 \
+    libxcb1 \
+    libx11-6 \
+    libglib2.0-0 \
+    libgtk-3-0 \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /bot
 
-# 配置 pip 镜像（国内加速）
-ENV PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
-ENV PIP_TRUSTED_HOST=pypi.tuna.tsinghua.edu.cn
-
-# 安装 Python 依赖
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --default-timeout=120 -r requirements.txt
 
-# 复制源码
 COPY . .
 
 ENV PYTHONUNBUFFERED=1

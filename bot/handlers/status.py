@@ -49,6 +49,13 @@ def register(bot):
 `/rclonels [路径]` — 列出文件
 `/rclonecopyurl <URL>` — 直链上传（不走本地）
 
+🎨 **Pixiv**
+`/pixivpid <id>` — 按画作 ID 获取插画
+`/pixivauthor <uid>` — 浏览画师作品
+`/pixivtop [mode]` — 排行榜（day/week/month 等）
+`/pixivtoken` — 获取 refresh_token 的教程
+`/pixivtoken <token>` — 设置 refresh_token
+
 📊 **状态**
 `/start` — 查看 Bot 状态
 `/help` — 显示本帮助
