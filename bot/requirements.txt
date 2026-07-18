@@ -8,4 +8,3 @@ pixivpy3>=3.7
 pillow>=10.0
 
 jmcomic>=2.6
-telegraph>=2.2

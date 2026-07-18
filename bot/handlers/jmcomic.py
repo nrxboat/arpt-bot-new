@@ -14,7 +14,6 @@ import os
 import asyncio
 import logging
 import time
-import requests as _requests
 from telethon import events, Button
 from services import rclone_client as rc
 from services.jmcomic_client import (
